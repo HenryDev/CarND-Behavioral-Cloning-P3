@@ -1,32 +1,42 @@
 import csv
 import cv2
 import numpy
-from keras.layers import Flatten, Dense, Input
-from keras.models import Model
+from keras.layers import Flatten, Dense, Lambda
+from keras.models import Sequential
 
-lines = []
-with open('./data/driving_log.csv') as csv_file:
-    reader = csv.reader(csv_file)
-    next(reader)
-    for line in reader:
-        lines.append(line)
-images = []
-measurements = []
-for line in lines:
-    source_path = line[0]
-    file_name = source_path.split('/')[-1]
-    current_path = './data/img/' + file_name
-    image = cv2.imread(current_path)
-    images.append(image)
-    measurement = float(line[3])
-    measurements.append(measurement)
-training_set = numpy.array(images)
-training_label = numpy.array(measurements)
 
-incoming = Input((160, 320, 3))
-flattened = Flatten()(incoming)
-fully_connected = Dense(1)(flattened)
-model = Model(incoming, fully_connected)
+def read_data():
+    lines = []
+    with open('./data/driving_log.csv') as csv_file:
+        reader = csv.reader(csv_file)
+        next(reader)
+        for line in reader:
+            lines.append(line)
+    images = []
+    measurements = []
+    for line in lines:
+        source_path = line[0]
+        file_name = source_path.split('/')[-1]
+        current_path = './data/img/' + file_name
+        image = cv2.imread(current_path)
+        images.append(image)
+        steering_angle = float(line[3])
+        measurements.append(steering_angle)
+    training_set = numpy.array(images)
+    training_label = numpy.array(measurements)
+    return training_set, training_label
+
+
+def make_model():
+    network = Sequential()
+    network.add(Lambda(lambda pixel: pixel / 255 - 0.5, input_shape=(160, 320, 3)))
+    network.add(Flatten())
+    network.add(Dense(1))
+    return network
+
+
+model = make_model()
 model.compile('adam', 'mse')
-model.fit(training_set, training_label, nb_epoch=3, validation_split=0.2)
+x, y = read_data()
+model.fit(x, y, nb_epoch=2, validation_split=0.2)
 model.save('model.h5')

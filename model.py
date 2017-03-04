@@ -25,13 +25,14 @@ def read_data():
     images = []
     measurements = []
     for line in lines:
-        source_path = line[0]
-        file_name = source_path.split('/')[-1]
-        current_path = './data/img/' + file_name
-        image = cv2.imread(current_path)
-        images.append(image)
-        steering_angle = float(line[3])
-        measurements.append(steering_angle)
+        for camera in range(3):
+            source_path = line[camera]
+            file_name = source_path.split('/')[-1]
+            current_path = './data/img/' + file_name
+            image = cv2.imread(current_path)
+            images.append(image)
+            steering_angle = float(line[3])
+            measurements.append(steering_angle)
     augmented_images, augmented_measurements = augment_data(images, measurements)
     training_set = numpy.array(augmented_images)
     training_label = numpy.array(augmented_measurements)
@@ -41,13 +42,14 @@ def read_data():
 def make_model():
     network = Sequential()
     network.add(Lambda(lambda pixel: pixel / 255 - 0.5, input_shape=(160, 320, 3)))
-    network.add(convolutional.Convolution2D(6, 5, 5, activation='relu'))
-    network.add(pooling.MaxPooling2D)
-    network.add(convolutional.Convolution2D(6, 5, 5, activation='relu'))
-    network.add(pooling.MaxPooling2D)
+    network.add(convolutional.Cropping2D(cropping=((50, 20), (0, 0)), input_shape=(160, 320, 3)))
+    # network.add(convolutional.Convolution2D(6, 5, 5, activation='relu'))
+    # network.add(pooling.MaxPooling2D)
+    # network.add(convolutional.Convolution2D(6, 5, 5, activation='relu'))
+    # network.add(pooling.MaxPooling2D)
     network.add(Flatten())
-    network.add(Dense(120))
-    network.add(Dense(84))
+    # network.add(Dense(120))
+    # network.add(Dense(84))
     network.add(Dense(1))
     return network
 
@@ -55,5 +57,5 @@ def make_model():
 model = make_model()
 model.compile('adam', 'mse')
 x, y = read_data()
-model.fit(x, y, nb_epoch=2, validation_split=0.2)
+model.fit(x, y, nb_epoch=1, validation_split=0.2)
 model.save('model.h5')

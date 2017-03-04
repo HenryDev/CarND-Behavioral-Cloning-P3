@@ -1,8 +1,18 @@
 import csv
 import cv2
 import numpy
-from keras.layers import Flatten, Dense, Lambda
+from keras.layers import Flatten, Dense, Lambda, convolutional, pooling
 from keras.models import Sequential
+
+
+def augment_data(images, measurements):
+    augmented_images, augmented_measurements = [], []
+    for image, measurement in zip(images, measurements):
+        augmented_images.append(image)
+        augmented_images.append(cv2.flip(image, 1))
+        augmented_measurements.append(measurement)
+        augmented_measurements.append(measurement * -1)
+    return augmented_images, augmented_measurements
 
 
 def read_data():
@@ -22,15 +32,22 @@ def read_data():
         images.append(image)
         steering_angle = float(line[3])
         measurements.append(steering_angle)
-    training_set = numpy.array(images)
-    training_label = numpy.array(measurements)
+    augmented_images, augmented_measurements = augment_data(images, measurements)
+    training_set = numpy.array(augmented_images)
+    training_label = numpy.array(augmented_measurements)
     return training_set, training_label
 
 
 def make_model():
     network = Sequential()
     network.add(Lambda(lambda pixel: pixel / 255 - 0.5, input_shape=(160, 320, 3)))
+    network.add(convolutional.Convolution2D(6, 5, 5, activation='relu'))
+    network.add(pooling.MaxPooling2D)
+    network.add(convolutional.Convolution2D(6, 5, 5, activation='relu'))
+    network.add(pooling.MaxPooling2D)
     network.add(Flatten())
+    network.add(Dense(120))
+    network.add(Dense(84))
     network.add(Dense(1))
     return network
 

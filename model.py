@@ -42,7 +42,7 @@ def read_data():
 def make_model():
     network = Sequential()
     network.add(Lambda(lambda pixel: pixel / 255 - 0.5, input_shape=(160, 320, 3)))
-    network.add(convolutional.Cropping2D((70, 25), (0, 0)))
+    network.add(convolutional.Cropping2D(cropping=((70, 25), (0, 0))))
     # network.add(convolutional.Convolution2D(6, 5, 5, activation='relu'))
     # network.add(pooling.MaxPooling2D)
     # network.add(convolutional.Convolution2D(6, 5, 5, activation='relu'))

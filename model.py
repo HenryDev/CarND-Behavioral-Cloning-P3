@@ -1,5 +1,4 @@
 import csv
-
 import cv2
 import numpy
 from keras.layers import Flatten, Dense, Lambda, convolutional
@@ -59,5 +58,7 @@ def make_model():
 model = make_model()
 model.compile('adam', 'mse')
 x, y = read_data()
+print(x.shape)
+print(y.shape)
 model.fit(x, y, nb_epoch=1, validation_split=0.2)
 model.save('model.h5')

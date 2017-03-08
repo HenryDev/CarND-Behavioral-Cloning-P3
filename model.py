@@ -1,7 +1,8 @@
 import csv
+
 import cv2
 import numpy
-from keras.layers import Flatten, Dense, Lambda, convolutional, pooling
+from keras.layers import Flatten, Dense, Lambda, convolutional
 from keras.models import Sequential
 
 
@@ -43,14 +44,15 @@ def make_model():
     network = Sequential()
     network.add(Lambda(lambda pixel: pixel / 255 - 0.5, input_shape=(160, 320, 3)))
     network.add(convolutional.Cropping2D(cropping=((70, 25), (0, 0))))
-    # network.add(convolutional.Convolution2D(6, 5, 5, activation='relu'))
-    # network.add(pooling.MaxPooling2D)
-    # network.add(convolutional.Convolution2D(6, 5, 5, activation='relu'))
-    # network.add(pooling.MaxPooling2D)
+    network.add(convolutional.Convolution2D(24, 5, 5, activation='relu', subsample=(2, 2)))
+    network.add(convolutional.Convolution2D(36, 5, 5, activation='relu', subsample=(2, 2)))
+    network.add(convolutional.Convolution2D(48, 5, 5, activation='relu', subsample=(2, 2)))
+    network.add(convolutional.Convolution2D(64, 3, 3, activation='relu', subsample=(2, 2)))
+    network.add(convolutional.Convolution2D(64, 3, 3, activation='relu', subsample=(2, 2)))
     network.add(Flatten())
-    # network.add(Dense(120))
-    # network.add(Dense(84))
-    network.add(Dense(1))
+    network.add(Dense(100))
+    network.add(Dense(50))
+    network.add(Dense(10))
     return network
 
 

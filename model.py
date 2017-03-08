@@ -52,7 +52,7 @@ def make_model():
     network.add(Flatten())
     network.add(Dense(100))
     network.add(Dense(50))
-    network.add(Dense(10))
+    network.add(Dense(1))
     return network
 
 

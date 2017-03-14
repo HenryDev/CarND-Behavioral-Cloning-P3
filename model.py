@@ -3,6 +3,7 @@ import cv2
 import numpy
 from keras.layers import Flatten, Dense, Lambda, convolutional
 from keras.models import Sequential
+import matplotlib.pyplot as plt
 
 
 def augment_data(images, measurements):
@@ -28,10 +29,10 @@ def read_data():
         for camera in range(3):
             source_path = line[camera]
             file_name = source_path.split('/')[-1]
-            current_path = './data/img/' + file_name
+            current_path = './data/IMG/' + file_name
             image = cv2.imread(current_path)
             images.append(image)
-            steering_angle = float(line[3])
+            steering_angle = line[3]
             measurements.append(steering_angle)
     augmented_images, augmented_measurements = augment_data(images, measurements)
     training_set = numpy.array(augmented_images)
@@ -49,16 +50,25 @@ def make_model():
     network.add(convolutional.Convolution2D(64, 3, 3, activation='relu', subsample=(2, 2)))
     network.add(convolutional.Convolution2D(64, 2, 2, activation='relu', subsample=(2, 2)))
     network.add(Flatten())
-    network.add(Dense(100))
-    network.add(Dense(50))
-    network.add(Dense(1))
+    network.add(Dense(100, activation='relu'))
+    network.add(Dense(50, activation='relu'))
+    network.add(Dense(1, activation='relu'))
     return network
 
 
 model = make_model()
 model.compile('adam', 'mse')
 x, y = read_data()
-print(x.shape)
-print(y.shape)
 model.fit(x, y, nb_epoch=1, validation_split=0.2)
+# model.fit_generator(training_generator,len(),1)
+# print(history.history.keys())
+
+# plt.plot(history.history['loss'])
+# plt.plot(history.history['val_loss'])
+# plt.title('model mean squared error loss')
+# plt.ylabel('mean squared error loss')
+# plt.xlabel('epoch')
+# plt.legend(['training set', 'validation set'], loc='upper right')
+# plt.show()
+
 model.save('model.h5')

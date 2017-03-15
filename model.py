@@ -32,7 +32,7 @@ def read_data():
             current_path = './data/IMG/' + file_name
             image = cv2.imread(current_path)
             images.append(image)
-        steering_angle = line[3]
+        steering_angle = float(line[3])
         measurements.append(steering_angle)
         measurements.append(steering_angle + 0.2)
         measurements.append(steering_angle - 0.2)
@@ -62,7 +62,7 @@ def make_model():
 model = make_model()
 model.compile('adam', 'mse')
 x, y = read_data()
-model.fit(x, y, nb_epoch=1, validation_split=0.2)
+model.fit(x, y, nb_epoch=3, validation_split=0.2)
 # model.fit_generator(training_generator,len(),1)
 # print(history.history.keys())
 

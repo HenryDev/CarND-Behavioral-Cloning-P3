@@ -32,8 +32,11 @@ def read_data():
             current_path = './data/IMG/' + file_name
             image = cv2.imread(current_path)
             images.append(image)
-            steering_angle = float(line[3])
-            measurements.append(steering_angle)
+        steering_angle = line[3]
+        measurements.append(steering_angle)
+        measurements.append(steering_angle + 0.2)
+        measurements.append(steering_angle - 0.2)
+        measurements.append(steering_angle)
     augmented_images, augmented_measurements = augment_data(images, measurements)
     training_set = numpy.array(augmented_images)
     training_label = numpy.array(augmented_measurements)

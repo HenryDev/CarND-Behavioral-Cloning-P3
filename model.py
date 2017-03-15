@@ -50,11 +50,12 @@ def make_model():
     network.add(convolutional.Convolution2D(24, 5, 5, activation='relu', subsample=(2, 2)))
     network.add(convolutional.Convolution2D(36, 5, 5, activation='relu', subsample=(2, 2)))
     network.add(convolutional.Convolution2D(48, 5, 5, activation='relu', subsample=(2, 2)))
-    network.add(convolutional.Convolution2D(64, 3, 3, activation='relu', subsample=(2, 2)))
-    network.add(convolutional.Convolution2D(64, 2, 2, activation='relu', subsample=(2, 2)))
+    network.add(convolutional.Convolution2D(64, 3, 3, activation='relu'))
+    network.add(convolutional.Convolution2D(64, 3, 3, activation='relu'))
     network.add(Flatten())
     network.add(Dense(100, activation='relu'))
     network.add(Dense(50, activation='relu'))
+    network.add(Dense(10, activation='relu'))
     network.add(Dense(1, activation='relu'))
     return network
 

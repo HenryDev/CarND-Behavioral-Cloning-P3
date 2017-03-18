@@ -62,5 +62,6 @@ def make_model():
 model = make_model()
 model.compile('adam', 'mse')
 x, y = read_data()
-model.fit(x, y, epochs=1, validation_split=0.2)
+# model.fit(x, y, epochs=1, validation_split=0.2)
+model.fit(x, y, validation_split=0.2)
 model.save('model.h5')
